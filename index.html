@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>มีอะไรจะบอก...❤️</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500;600&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Prompt', 'Mitr', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #fce4ec;
+      background-image: radial-gradient(#f8bbd0 1px, transparent 0);
+      background-size: 20px 20px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 15px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Animated Floating Hearts Background */
+    .bg-heart {
+      position: absolute;
+      color: rgba(244, 143, 177, 0.4);
+      font-size: 20px;
+      animation: floatUp 6s linear infinite;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(100vh) scale(0.8); opacity: 1; }
+      100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+    }
+
+    /* Window / Card Container */
+    .card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 360px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(233, 30, 99, 0.15);
+      border: 2px solid #f8bbd0;
+      padding: 24px 20px;
+      text-align: center;
+      position: relative;
+      z-index: 10;
+      display: none;
+      animation: fadeIn 0.4s ease-in-out forwards;
+    }
+
+    .card.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* Images / GIFs */
+    .img-box {
+      width: 140px;
+      height: 140px;
+      margin: 10px auto 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .img-box img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.05));
+    }
+
+    .gift-btn {
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .gift-btn:active {
+      transform: scale(0.9);
+    }
+
+    /* Retro Header Label */
+    .retro-badge {
+      display: inline-block;
+      background: #fff0f5;
+      border: 1.5px solid #f48fb1;
+      color: #ad1457;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 500;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    /* Typography */
+    h2 {
+      color: #880e4f;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    p {
+      color: #6a1b9a;
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 15px;
+    }
+
+    .sub-text {
+      font-size: 12px;
+      color: #b0bec5;
+      margin-top: 8px;
+    }
+
+    /* Buttons */
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px 18px;
+      border-radius: 14px;
+      border: none;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    }
+
+    .btn-primary {
+      background: #f48fb1;
+      color: white;
+      border: 1px solid #f06292;
+    }
+    .btn-primary:active {
+      background: #ec407a;
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      background: #f5f5f5;
+      color: #616161;
+      border: 1px solid #e0e0e0;
+    }
+    .btn-secondary:active {
+      background: #eeeeee;
+    }
+
+    /* Retro Window Style (Step 2 Pop-up Look) */
+    .retro-window {
+      border: 2px solid #f48fb1;
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(244, 143, 177, 0.2);
+    }
+
+    .retro-header {
+      background: #f8bbd0;
+      padding: 6px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #ad1457;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .retro-body {
+      padding: 20px 15px;
+    }
+
+    /* Modal / Pop-up for Error */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.25);
+      backdrop-filter: blur(2px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: white;
+      border: 2px solid #ef5350;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 300px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      overflow: hidden;
+      animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.8); }
+      to { transform: scale(1); }
+    }
+
+    .modal-header {
+      background: #ef5350;
+      color: white;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .modal-body {
+      padding: 20px 15px;
+      text-align: center;
+    }
+
+    .modal-body p {
+      color: #333;
+      font-size: 14px;
+      margin-bottom: 15px;
+      font-weight: 500;
+    }
+
+    .modal-btn {
+      background: #ef5350;
+      color: white;
+      border: none;
+      padding: 8px 24px;
+      border-radius: 20px;
+      font-size: 13px;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(239, 83, 80, 0.3);
+    }
+
+    /* Note Paper Box (Step 3) */
+    .note-box {
+      background: #fff8e1;
+      border: 1px dashed #ffe082;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: left;
+      font-size: 13px;
+      color: #5d4037;
+      line-height: 1.8;
+      margin-bottom: 15px;
+    }
+
+    .hint-text {
+      font-size: 11px;
+      color: #e91e63;
+      margin-top: 6px;
+      min-height: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="heart-container"></div>
+
+  <div class="card active" id="step1">
+    <div class="retro-badge">SECRET_FILE.EXE</div>
+    <h2>มีอะไรบางอย่าง<br>อยากให้เธอเปิด...</h2>
+    
+    <div class="img-box gift-btn" onclick="nextStep(2)">
+      <img src="https://cdn-icons-png.flaticon.com/512/4213/4213958.png" alt="Gift Box">
+    </div>
+
+    <p class="sub-text">และที่กล่องมีของขวัญ 🎁 (แตะที่กล่อง)</p>
+  </div>
+
+  <div class="card" id="step2">
+    <div class="retro-window">
+      <div class="retro-header">
+        <span>WARNING ♡</span>
+        <span>✕</span>
+      </div>
+      <div class="retro-body">
+        <div class="img-box" style="height: 90px; margin: 0 auto 10px;">
+          <img src="https://cdn-icons-png.flaticon.com/512/616/616430.png" alt="Snoopy Wondering">
+        </div>
+        <h2>มีบางอย่างอยากถามเธอ...</h2>
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="nextStep(3)">อยากรู้ดิ 💖</button>
+          <button class="btn btn-secondary" onclick="refuseWarning()">ไม่อยากรู้ 🥺</button>
+        </div>
+        <div class="hint-text" id="warning-hint"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="step3">
+    <div class="retro-badge">THINKING_OF_YOU 💭</div>
+    <div class="img-box" style="height: 100px; margin-bottom: 10px;">
+      <img src="https://cdn-icons-png.flaticon.com/512/3588/3588658.png" alt="Cute Animal Writing">
+    </div>
+    
+    <div class="note-box">
+      จริงๆ แล้วเรามีอะไรอยากบอกเธอมานานแล้ว...<br><br>
+      แต่ไม่รู้จะเริ่มยังไงดี<br>
+      งั้นพูดตรงๆ เลยแล้วกัน...
+    </div>
+
+    <button class="btn btn-primary" onclick="nextStep(4)">เปิดอ่านข้อความ 💌</button>
+  </div>
+
+  <div class="card" id="step4">
+    <div class="retro-badge">OUR_SECRET ♡</div>
+    
+    <div class="img-box">
+      <img src="https://cdn-icons-png.flaticon.com/512/1023/1023656.png" alt="Asking Love">
+    </div>
+
+    <p style="font-size: 12px; color: #888; margin-bottom: 4px;">เราแอบชอบเธอมานานแล้วนะ...</p>
+    <h2>เป็นแฟนกับเราได้ไหม? 🥺</h2>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="acceptProposal()">ตกลงเป็นแฟนกัน 🌸</button>
+      <button class="btn btn-secondary" onclick="triggerErrorModal()">ขอคิดดูก่อน 💭</button>
+    </div>
+  </div>
+
+  <div class="card" id="step5">
+    <div class="img-box" id="success-img-box">
+      <img src="https://cdn-icons-png.flaticon.com/512/3588/3588670.png" alt="Happy Dog">
+    </div>
+
+    <h2 id="success-title">เย้!!! เรามีแฟนแล้ว 🎉</h2>
+    <p id="success-desc">ขอบคุณที่เลือกเรานะ<br>ต่อจากนี้ฝากตัวด้วยด้วยนะ :)</p>
+
+    <button class="btn btn-primary" id="hug-btn" onclick="giveHug()">กอดทีนึง 🫂</button>
+  </div>
+
+  <div class="modal-overlay" id="errorModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span>ERROR !!</span>
+        <span>✕</span>
+      </div>
+      <div class="modal-body">
+        <p id="error-message">ระบบไม่พบคำตอบนี้ 🚫</p>
+        <button class="modal-btn" onclick="closeModal()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Create Background Hearts Floating
+    function createHearts() {
+      const container = document.getElementById('heart-container');
+      const heartCount = 12;
+      for (let i = 0; i < heartCount; i++) {
+        const heart = document.createElement('div');
+        heart.classList.add('bg-heart');
+        heart.innerHTML = '♥';
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.animationDuration = (Math.random() * 3 + 4) + 's';
+        heart.style.animationDelay = Math.random() * 5 + 's';
+        heart.style.fontSize = (Math.random() * 15 + 15) + 'px';
+        container.appendChild(heart);
+      }
+    }
+    createHearts();
+
+    // Step Navigation
+    function nextStep(stepNumber) {
+      document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
+      document.getElementById('step' + stepNumber).classList.add('active');
+    }
+
+    // Step 2: "ไม่อยากรู้" Handler
+    let warningClickCount = 0;
+    function refuseWarning() {
+      const hint = document.getElementById('warning-hint');
+      warningClickCount++;
+      if (warningClickCount === 1) {
+        hint.innerText = "แน่ใจเหรอ 🥺 เลือกใหม่อีกทีนะ";
+      } else if (warningClickCount === 2) {
+        hint.innerText = "กดอันบนเถอะนะ ขอร้องงง 🙏";
+      } else {
+        hint.innerText = "ไม่ได้! ยังไงก็ต้องกดอยากรู้! 😡";
+      }
+    }
+
+    // Step 4: Sassy Error Messages System
+    const errorMessages = [
+      "ระบบไม่พบคำตอบนี้ ❌",
+      "เอ๊ะ... ยังเลือกอันนี้อยู่อีกเหรอ 😣",
+      "ยอมเป็นแฟนเราดีๆ ได้ไหม 🥺",
+      "ลองเลือกคำตอบใหม่อีกครั้งนะ 😉",
+    ];
+    let errorIndex = 0;
+
+    function triggerErrorModal() {
+      const modal = document.getElementById('errorModal');
+      const msgText = document.getElementById('error-message');
+      
+      msgText.innerText = errorMessages[errorIndex];
+      errorIndex = (errorIndex + 1) % errorMessages.length;
+      
+      modal.classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('errorModal').classList.remove('active');
+    }
+
+    // Step 5: Proposal Acceptance & Confetti
+    function acceptProposal() {
+      nextStep(5);
+      
+      // Fire Confetti Effect
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      setTimeout(() => {
+        confetti({
+          particleCount: 50,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 }
+        });
+        confetti({
+          particleCount: 50,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 }
+        });
+      }, 250);
+    }
+
+    // Give Hug Interactive Action
+    function giveHug() {
+      const imgBox = document.getElementById('success-img-box');
+      const title = document.getElementById('success-title');
+      const desc = document.getElementById('success-desc');
+      const btn = document.getElementById('hug-btn');
+
+      imgBox.innerHTML = '<img src="https://cdn-icons-png.flaticon.com/512/2589/2589175.png" alt="Hug Heart">';
+      title.innerHTML = 'กอดแล้วนะ 🫂💖';
+      desc.innerHTML = 'รักนะ... ห้ามคืนคำล่ะ 🥰';
+      btn.style.display = 'none';
+
+      // Small Heart Explosion
+      confetti({
+        particleCount: 40,
+        scalar: 1.2,
+        shapes: ['circle'],
+        colors: ['#f48fb1', '#ff4081', '#ffffff']
+      });
+    }
+  </script>
+</body>
+</html>
